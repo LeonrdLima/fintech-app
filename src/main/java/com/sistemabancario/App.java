@@ -64,32 +64,42 @@ public class App {
             return null;
         }
 
-        for (Conta conta : listaContas) {
-            if (conta.cpf.equals(user.cpf)) {
-                return conta;
-            }
+        Conta conta = buscaConta(cpf);
+        if (conta != null) {
+            return conta;
+        } else {
+            System.out.println("cliente inválido");
+            return null;
         }
-
-        return null;
     }
 
     static void menuConta(Conta conta) {
         while (true) {
             System.out.println("Bem vindo " + conta.nome);
             System.out.println("Selecione uma opção");
-            System.out.print("1. Ver saldo\n2. Depósito\n3. Saque\n4. Transferência\n");
+            System.out.print("1. Ver extrato\n2. Depósito\n3. Saque\n4. Transferência\n0. Sair\n");
             Scanner input = new Scanner(System.in);
             int opcao = input.nextInt();
             double valor;
             switch (opcao) {
                 case 1:
-                    System.out.println("Saldo atual: " + conta.getSaldo());
+                    System.out.println("Extrato da conta");
+                    List<String> extrato = conta.verExtrato();
+                    if (extrato.isEmpty()) {
+                        System.out.println("Nenhuma movimentação na conta");
+                    } else {
+                        for (String transacao : extrato) {
+                            System.out.println(transacao);
+                        }
+                    }
+                    System.out.println("Saldo atual: R$" + conta.getSaldo());
                     break;
 
                 case 2:
                     System.out.println("Digite um valor a ser depositado");
                     valor = input.nextDouble();
                     conta.deposito(valor);
+                    conta.registrarTransacao("Depósito feito no valor de R$" + valor);
                     System.out.println("Depósito efetuado com sucesso");
                     break;
 
@@ -97,8 +107,28 @@ public class App {
                     System.out.println("Digite um valor a ser sacado");
                     valor = input.nextDouble();
                     conta.saque(valor);
+                    conta.registrarTransacao("Saque realizado no valor de R$" + valor);
                     System.out.println("Saque efetuado com sucesso");
                     break;
+
+                case 4:
+                    System.out.println("Digite o CPF do destinatário da conta que deseja transferir");
+                    String cpf = input.next();
+                    Conta destino = buscaConta(cpf);
+                    if (destino != null) {
+                        System.out.println("Digite um valor a ser transferido");
+                        valor = input.nextDouble();
+                        conta.transferir(destino, valor);
+                        conta.registrarTransacao("Transferência feita para " + destino.nome + " no valor de R$" + valor);
+                        System.out.println("Transferência realizada com sucesso");
+                    } else {
+                        System.out.println("CPF inválido");
+                    }
+                    break;
+
+                case 0:
+                    System.out.println("Saindo da conta");
+                    return;
 
                 default:
                     break;
@@ -110,6 +140,15 @@ public class App {
         for (Cliente cliente : listaClientes) {
             if (cpf.equals(cliente.cpf) && senha.equals(cliente.senha)) {
                 return cliente;
+            }
+        }
+        return null;
+    }
+
+    static Conta buscaConta(String cpf) {
+        for (Conta conta : listaContas) {
+            if (conta.cpf.equals(cpf)) {
+                return conta;
             }
         }
         return null;
