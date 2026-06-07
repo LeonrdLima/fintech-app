@@ -75,9 +75,9 @@ public class App {
 
     static void menuConta(Conta conta) {
         while (true) {
-            System.out.println("Bem vindo " + conta.nome);
+            System.out.println("Bem vindo " + conta.titular.nome);
             System.out.println("Selecione uma opção");
-            System.out.print("1. Ver extrato\n2. Depósito\n3. Saque\n4. Transferência\n0. Sair\n");
+            System.out.print("1. Ver extrato\n2. Depósito\n3. Saque\n4. Transferência\n5. Alterar dados cadastrais\n6. Excluir conta\n0. Sair\n");
             Scanner input = new Scanner(System.in);
             int opcao = input.nextInt();
             double valor;
@@ -119,10 +119,36 @@ public class App {
                         System.out.println("Digite um valor a ser transferido");
                         valor = input.nextDouble();
                         conta.transferir(destino, valor);
-                        conta.registrarTransacao("Transferência feita para " + destino.nome + " no valor de R$" + valor);
+                        conta.registrarTransacao("Transferência feita para " + destino.titular.nome + " no valor de R$" + valor);
+                        destino.registrarTransacao("Transferência recebida de " + conta.titular.nome + " no valor de R$" + valor);
                         System.out.println("Transferência realizada com sucesso");
                     } else {
                         System.out.println("CPF inválido");
+                    }
+                    break;
+
+                case 5:
+                    menuAlterarDados(conta);
+                    break;
+
+                case 6:
+                    System.out.println("Tem certeza que quer apagar seus dados?");
+                    System.out.print("1. Sim\n2. Não\n");
+                    int opcaoDelete = input.nextInt();
+                    if (opcaoDelete == 1) {
+                        System.out.println("Digite sua senha");
+                        String senha = input.next();
+                        if (conta.titular.senha.equals(senha)) {
+                            deletarConta(conta.titular.cpf);
+                            System.out.println("Conta deletada com sucesso");
+                            return;
+                        } else {
+                            System.out.println("Senha inválida");
+                        }
+                    } else if (opcaoDelete == 2) {
+                        break;
+                    } else {
+                        System.out.println("Opção inválida");
                     }
                     break;
 
@@ -147,11 +173,53 @@ public class App {
 
     static Conta buscaConta(String cpf) {
         for (Conta conta : listaContas) {
-            if (conta.cpf.equals(cpf)) {
+            if (conta.titular.cpf.equals(cpf)) {
                 return conta;
             }
         }
         return null;
+    }
+
+    static void menuAlterarDados(Conta conta) {
+        System.out.println("O que deseja alterar");
+        System.out.print("1. E-mail\n2. Senha\n0. Voltar\n");
+        Scanner input = new Scanner(System.in);
+        int opcao = input.nextInt();
+        input.nextLine();
+        switch (opcao) {
+            case 1:
+                System.out.println("Digite o novo e-mail");
+                String email = input.nextLine();
+                conta.titular.alterarEmail(email);
+                System.out.println("E-mail alterado com sucesso");
+                break;
+
+            case 2:
+                while (true) {
+                    System.out.println("Digite sua senha atual");
+                    String senhaAtual = input.nextLine();
+                    if (conta.titular.senha.equals(senhaAtual)) {
+                        System.out.println("Digite nova senha");
+                        String novaSenha = input.nextLine();
+                        conta.titular.alterarSenha(novaSenha);
+                        System.out.println("Senha alterada com sucesso");
+                        break;
+                    } else {
+                        System.out.println("Senha incorreta");
+                    }
+                }
+                break;
+            
+            case 0:
+                return;
+
+            default:
+                break;
+        }
+    }
+
+    static void deletarConta(String cpf) {
+        listaContas.remove(buscaConta(cpf));
     }
 
 }

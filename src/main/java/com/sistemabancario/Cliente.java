@@ -12,4 +12,12 @@ public class Cliente {
         this.email = email;
         this.senha = senha;
     }
+
+    public void alterarEmail(String email) {
+        this.email = email;
+    }
+
+    public void alterarSenha(String senha) {
+        this.senha = senha;
+    }
 }

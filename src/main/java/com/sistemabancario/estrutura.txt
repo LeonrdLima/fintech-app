@@ -1,6 +1,0 @@
-Cliente {
-    nome
-    cpf
-    email
-    senha
-}

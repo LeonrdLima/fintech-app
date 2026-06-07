@@ -4,23 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conta {
-    String nome;
-    String cpf;
+    Cliente titular;
     int numero;
     double saldo;
     List<String> historico = new ArrayList<>();
     
     public Conta(Cliente cliente, int numero) {
-        this.nome = cliente.nome;
-        this.cpf = cliente.cpf;
+        this.titular = cliente;
         this.numero = numero;
-        this.saldo = 0.0;
-    }
-
-    public Conta() {
-        this.nome = "";
-        this.cpf = "";
-        this.numero = 0;
         this.saldo = 0.0;
     }
 
