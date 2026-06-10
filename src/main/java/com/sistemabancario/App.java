@@ -7,21 +7,22 @@ import java.util.Scanner;
 public class App {
     static List<Conta> listaContas = new ArrayList<>();
     static List<Cliente> listaClientes = new ArrayList<>();
+    static Scanner input = new Scanner(System.in);
     public static void main(String[] args) {
         while (true) {
             System.out.println("Sistema bancário.");
             System.out.println("Digite um número para prosseguir:");
             System.out.print("1. Criar conta\n2. Entrar na conta\n0. Sair\n");
-            Scanner input = new Scanner(System.in);
+            //Scanner input = new Scanner(System.in);
             int opcao = input.nextInt();
             switch (opcao) {
                 case 1: 
-                    criarConta();
+                    criarConta(input);
                     break;
                 
                 case 2:
-                    Conta conta = loginConta();
-                    menuConta(conta);
+                    Conta conta = loginConta(input);
+                    menuConta(conta, input);
                     break;
             
                 case 0:
@@ -34,8 +35,8 @@ public class App {
         }
     }
 
-    static void criarConta() {
-        Scanner input = new Scanner(System.in);
+    static void criarConta(Scanner input) {
+        //Scanner input = new Scanner(System.in);
         System.out.println("Digite seu nome");
         String nome = input.nextLine();
         System.out.println("Digite seu cpf");
@@ -47,12 +48,12 @@ public class App {
 
         Cliente newCliente = new Cliente(nome, cpf, email, senha);
         listaClientes.add(newCliente);
-        Conta conta = new Conta(newCliente, 1);
+        Conta conta = new Conta(newCliente);
         listaContas.add(conta);
     }
 
-    static Conta loginConta() {
-        Scanner input = new Scanner(System.in);
+    static Conta loginConta(Scanner input) {
+        //Scanner input = new Scanner(System.in);
         System.out.println("Digite seu CPF");
         String cpf = input.nextLine();
         System.out.println("Digite a senha");
@@ -73,12 +74,12 @@ public class App {
         }
     }
 
-    static void menuConta(Conta conta) {
+    static void menuConta(Conta conta, Scanner input) {
         while (true) {
-            System.out.println("Bem vindo " + conta.titular.nome);
+            System.out.println("Bem vindo " + conta.getTitular().getNome());
             System.out.println("Selecione uma opção");
             System.out.print("1. Ver extrato\n2. Depósito\n3. Saque\n4. Transferência\n5. Alterar dados cadastrais\n6. Excluir conta\n0. Sair\n");
-            Scanner input = new Scanner(System.in);
+            //Scanner input = new Scanner(System.in);
             int opcao = input.nextInt();
             double valor;
             switch (opcao) {
@@ -119,8 +120,8 @@ public class App {
                         System.out.println("Digite um valor a ser transferido");
                         valor = input.nextDouble();
                         conta.transferir(destino, valor);
-                        conta.registrarTransacao("Transferência feita para " + destino.titular.nome + " no valor de R$" + valor);
-                        destino.registrarTransacao("Transferência recebida de " + conta.titular.nome + " no valor de R$" + valor);
+                        conta.registrarTransacao("Transferência feita para " + destino.getTitular().getNome() + " no valor de R$" + valor);
+                        destino.registrarTransacao("Transferência recebida de " + conta.getTitular().getNome() + " no valor de R$" + valor);
                         System.out.println("Transferência realizada com sucesso");
                     } else {
                         System.out.println("CPF inválido");
@@ -128,7 +129,7 @@ public class App {
                     break;
 
                 case 5:
-                    menuAlterarDados(conta);
+                    menuAlterarDados(conta, input);
                     break;
 
                 case 6:
@@ -138,8 +139,8 @@ public class App {
                     if (opcaoDelete == 1) {
                         System.out.println("Digite sua senha");
                         String senha = input.next();
-                        if (conta.titular.senha.equals(senha)) {
-                            deletarConta(conta.titular.cpf);
+                        if (conta.getTitular().getSenha().equals(senha)) {
+                            deletarConta(conta.getTitular().getSenha());
                             System.out.println("Conta deletada com sucesso");
                             return;
                         } else {
@@ -164,7 +165,7 @@ public class App {
 
     static Cliente validaCliente(String cpf, String senha) {
         for (Cliente cliente : listaClientes) {
-            if (cpf.equals(cliente.cpf) && senha.equals(cliente.senha)) {
+            if (cpf.equals(cliente.getCpf()) && senha.equals(cliente.getSenha())) {
                 return cliente;
             }
         }
@@ -173,24 +174,24 @@ public class App {
 
     static Conta buscaConta(String cpf) {
         for (Conta conta : listaContas) {
-            if (conta.titular.cpf.equals(cpf)) {
+            if (conta.getTitular().getCpf().equals(cpf)) {
                 return conta;
             }
         }
         return null;
     }
 
-    static void menuAlterarDados(Conta conta) {
+    static void menuAlterarDados(Conta conta, Scanner input) {
         System.out.println("O que deseja alterar");
         System.out.print("1. E-mail\n2. Senha\n0. Voltar\n");
-        Scanner input = new Scanner(System.in);
+        //Scanner input = new Scanner(System.in);
         int opcao = input.nextInt();
         input.nextLine();
         switch (opcao) {
             case 1:
                 System.out.println("Digite o novo e-mail");
                 String email = input.nextLine();
-                conta.titular.alterarEmail(email);
+                conta.getTitular().alterarEmail(email);
                 System.out.println("E-mail alterado com sucesso");
                 break;
 
@@ -198,10 +199,10 @@ public class App {
                 while (true) {
                     System.out.println("Digite sua senha atual");
                     String senhaAtual = input.nextLine();
-                    if (conta.titular.senha.equals(senhaAtual)) {
+                    if (conta.getTitular().getSenha().equals(senhaAtual)) {
                         System.out.println("Digite nova senha");
                         String novaSenha = input.nextLine();
-                        conta.titular.alterarSenha(novaSenha);
+                        conta.getTitular().alterarSenha(novaSenha);
                         System.out.println("Senha alterada com sucesso");
                         break;
                     } else {
